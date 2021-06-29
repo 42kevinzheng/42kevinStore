@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import data from './data.js';
+import userRouter from './routes/userRouter.js';
+import productRouter from './routes/productRoute.js';
 
 dotenv.config();
 
@@ -11,18 +13,10 @@ app.use(express.json({ limit: '30mb', extended: true }))
 app.use(express.urlencoded({ limit: '30mb', extended: true }))
 app.use(cors());
 
-app.get('/api/products/:id', (req, res) => {
-  const product = data.products.find((x) => x._id === req.params.id);
-  if (product) {
-    res.send(product);
-  } else {
-    res.status(404).send({ message: 'Product Not Found' });
-  }
-});
-
-
-app.get('/api/products', (req, res) => {
-  res.send(data.products);
+app.use('/api/users', userRouter);
+app.use('/api/products', productRouter);
+app.use((err, req, res, next) => {
+  res.status(500).send({ message: err.message });
 });
 
 app.get('/', (req, res) => {
